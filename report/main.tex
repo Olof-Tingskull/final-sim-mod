@@ -1,0 +1,143 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{amsmath}
+
+\title{Simulating traffic and the effect of lane chaning}
+\author{Olof Tingskull}
+\date{January 2024}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+\section{Method}
+
+\subsection{Model Description}
+This section describes a simulation model for vehicular traffic on a multi-lane, periodic road. In this model, each vehicle is characterized by its position $p$ and velocity $v$. The vehicle dynamics are governed by discrete updates, with position and velocity evolving according to the Euler Forward Method.
+
+The position of a car at the next time step, denoted as $p_{i+1}$, is calculated using its current position $p_i$ and velocity $v_i$, and is constrained by the length of the road. This is mathematically represented as:
+
+$$p_{i+1} = (p_i + v_i \cdot dt) \bmod \textit{road length}$$ 
+
+Similarly, a vehicle’s velocity is updated considering its maximum acceleration, maximum deceleration, and a dynamically calculated target velocity. This target velocity is a crucial safety parameter, computed based on the distance to the preceding vehicle. It ensures that a car can decelerate safely to avoid collision, even in scenarios where the leading car stops abruptly. The target velocity is given by:
+
+$$\textit{target velocity} = \sqrt{2 \cdot decelaration \cdot distance}  $$
+subject to the constraints:
+$$ 0 \leq \textit{target velocity} \leq \textit{max velocity}$$
+
+This model aims to prevent collisions by adjusting each car's velocity, within the bounds of zero and the pre-defined maximum velocity, according to the computed target velocity. In the event of a potential collision, the trailing vehicle will halt until its no longer colliding.
+
+\subsubsection{Spontaneous Braking}
+To introduce variability in vehicular velocities, a mechanism of spontaneous braking is incorporated. At each time step, there exists a minor probability that any given vehicle will be compelled to brake instantaneously. This aspect introduces an additional layer of complexity to the traffic dynamics, enhancing the realism of the simulation. It also underscores the strategic advantage of lane changing, particularly in response to the abrupt stopping of a preceding vehicle.
+
+\subsubsection{Lane chaning}
+In our model, each vehicle is assigned to a specific lane and can switch to adjacent lanes. Lane-changing decisions are algorithmically determined based on the following safety criteria:
+\begin{itemize}
+\item There must be no vehicle occupying the same road segment in the target lane, as this would result in a collision.
+\item The vehicle following the lane-changing car must have sufficient distance to brake safely and avoid a collision.
+\item Post lane-change, the lane-changing vehicle must be able to brake in time if the vehicle ahead in the new lane is moving slower.
+\end{itemize}
+
+Once a vehicle determines that a lane change is feasible, it evaluates the benefits of switching lanes. The model calculates a 'lane score' (ranging from 0 to 1) for three options: switching to the right, to the left, or remaining in the current lane. The vehicle then selects the option with the highest score.
+
+Two main strategies are used for calculating the lane score:
+\begin{enumerate}
+\item \textit{Forward-Looking}: The lane score is determined based on the target velocity achievable in the new lane.
+\item \textit{Bi-directional} method, the lane score combines the achievable target velocities for the lane-switching vehicle and the vehicle behind it in the new lane. This approach ensures that lane changes are beneficial for both the switching vehicle and the trailing vehicle in the target lane.
+\end{enumerate}
+
+In the simulation, both strategies will be assessed. Additionally, a bias is introduced to discourage unnecessary lane changes, favoring the vehicle's current lane. This bias significantly influences car behavior. To identify the optimal lane-switching behavior, different bias values will be tested. 
+
+\subsection{Model Configuration}
+
+In this report, we detail the configuration of the model utilized for each iteration of the traffic simulation. Parameters are specified in standardized units where lengths are multiples of car lengths and time is measured in simulation steps.
+
+\subsubsection{Simulation Parameters}
+The simulation is configured with a set of parameters outlined in Table \ref{table:run_config}. These parameters are integral to the behavior and outcome of the simulation, dictating the dynamics of vehicle movement and interaction within the simulated environment.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Parameter}            & \textbf{Description} \\
+\hline
+Total Road Length             & The length of the simulated road, expressed in multiples of a car's length. \\
+\hline
+Lane Count                    & The number of traffic lanes available on the road. \\
+\hline
+Vehicle Density               & The proportion of the road occupied by vehicles. \\
+\hline
+Acceleration Rate             & The rate of acceleration for vehicles. A value of 1 signifies full acceleration to maximum velocity in one time step. \\
+\hline
+Deceleration Rate             & The rate of deceleration for vehicles. A value of 1 signifies full deceleration to a halt in one time step. \\
+\hline
+Maximum Per-Step Movement     & The maximum distance a vehicle can travel in a single simulation step. This is the product of the maximum velocity and the time step (delta time). \\
+\hline
+Spontaneous Stop Probability  & The probability of a vehicle randomly coming to a halt at any given step. \\
+\hline
+Current Lane Bias             & The bias towards remaining in the current lane when evaluating potential lane-switching maneuvers. \\
+\hline
+Simulation Duration (Steps)   & The total number of steps (time intervals) for which the simulation will run. \\
+\hline
+\end{tabular}
+\caption{Simulation Run Configuration Parameters}
+\label{table:run_config}
+\end{table}
+
+Not every possible permutation of these parameters can be practically analyzed. Therefore, a subset is selected based on intuitive reasoning, observation of simulation runs, and evaluation of parameter convergence.
+
+Through intuition and observation of the simulation, the following default parameters were established, as shown in Table \ref{table:default_params}.
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Parameter}            & \textbf{Default Value}  \\
+\hline
+Total Road Length             & 200 \\
+\hline
+Lane Count                    & 20 \\
+\hline
+Vehicle Density               & 0.05 \\
+\hline
+Acceleration Rate             & 0.005 \\
+\hline
+Deceleration Rate             &  0.05 \\
+\hline
+Maximum Per-Step Movement     &  0.1 \\
+\hline
+Spontaneous Stop Probability  & 0.001 \\
+\hline
+Current Lane Bias             & 0.1 \\
+\hline
+Simulation Duration (Steps)   & 10000 \\
+\hline
+\end{tabular}
+\caption{Default Simulation Parameters}
+\label{table:default_params}
+\end{table}
+
+In this study, the focus is not on the Total Road Length and Lane Count, as variations in these do not significantly impact the results due to convergence effects. The Maximum Per-Step Movement parameter mainly influences the simulation's temporal resolution. Lower values yield finer granularity but necessitate a longer duration to simulate equivalent vehicular travel, demanding more computational resources. It was observed that beyond 10,000 iterations, there is no significant change in traffic flow, allowing the Simulation Duration to be capped at this value.
+
+This analysis concentrates on the impact of the following parameters on traffic flow dynamics:
+\begin{itemize}
+\item Vehicle Density
+\item Acceleration Rate
+\item Deceleration Rate
+\item Spontaneous Stop Probability
+\item Current Lane Bias
+\end{itemize}
+
+These parameters are hypothesized to have a more pronounced effect on the simulation's outcome and are thus the primary subjects of investigation in this report.
+
+\section{Results}
+
+
+
+\section{Discussion}
+
+
+\end{document}

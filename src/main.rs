@@ -2,21 +2,19 @@ mod cars;
 mod simulate;
 mod util;
 
-use std::sync::atomic::{AtomicUsize, Ordering};
-use rayon::prelude::*;
-use serde::{Serialize, Deserialize};
-use std::fs::File;
-use std::io::Write;
-use std::path::Path;
-use util::{hue_to_rgb, linspace};
 use cars::{random_breaking, update_position, update_velocity, AllCars, Car};
 use piston_window::{Context, G2d};
 use rand::Rng;
+use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
 use simulate::{start_simulation, Simulation, WINDOW_HEIGHT, WINDOW_WIDTH};
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use util::{hue_to_rgb};
 
-
-#[derive(Debug, Clone, Copy)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct RunConfig {
     road_length: f64,
     num_lanes: i32,
@@ -30,8 +28,7 @@ struct RunConfig {
     steps_to_run: usize,
 }
 
-#[derive(Debug, Clone, Copy)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct Config {
     road_length: f64,
     car_length: f64,
@@ -163,7 +160,7 @@ impl Simulation for CarsSimulation {
     }
 }
 
-fn bake_config (ic: RunConfig) -> Config {
+fn bake_config(ic: RunConfig) -> Config {
     return Config {
         road_length: ic.road_length,
         num_lanes: ic.num_lanes,
@@ -182,13 +179,17 @@ fn bake_config (ic: RunConfig) -> Config {
 fn run_simulation(input_config: RunConfig) -> Option<SimulationResult> {
     let config = bake_config(input_config);
 
-    let max_flow_rate = (
-        config.max_velocity * (config.num_cars as f64) 
-        * (1. - config.random_stop_rate * config.max_velocity / config.max_acceleration / config.dt / 2.)
-    ) / (config.road_length as f64);
+    let max_flow_rate = (config.max_velocity
+        * (config.num_cars as f64)
+        * (1.
+            - config.random_stop_rate * config.max_velocity
+                / config.max_acceleration
+                / config.dt
+                / 2.))
+        / (config.road_length as f64);
 
     let mut simulation = CarsSimulation::new(config);
-    
+
     for _ in 0..input_config.steps_to_run {
         simulation.update();
     }
@@ -208,11 +209,11 @@ fn run_simulation(input_config: RunConfig) -> Option<SimulationResult> {
         flow_rate: average_flow_rate,
         max_flow_rate: max_flow_rate,
         collisions: average_collisions,
-    })
+    });
 }
 
-fn run_batch(configs: Vec<RunConfig>) ->  Result<(), Box<dyn std::error::Error>> {
-    let path = Path::new("./result");
+fn run_batch(configs: Vec<RunConfig>) -> Result<(), Box<dyn std::error::Error>> {
+    let path = Path::new("./output");
     if path.exists() {
         std::fs::remove_dir_all(path)?;
     }
@@ -220,30 +221,34 @@ fn run_batch(configs: Vec<RunConfig>) ->  Result<(), Box<dyn std::error::Error>>
 
     let num_done = AtomicUsize::new(0);
 
-    let best = configs.par_iter().enumerate().filter_map(|(i, &config)| {
-        let result_option = run_simulation(config);
+    let best = configs
+        .par_iter()
+        .enumerate()
+        .filter_map(|(i, &config)| {
+            let result_option = run_simulation(config);
 
-        num_done.fetch_add(1, Ordering::SeqCst);
-        println!("{}/{}", num_done.load(Ordering::SeqCst), configs.len());
+            num_done.fetch_add(1, Ordering::SeqCst);
+            println!("{}/{}", num_done.load(Ordering::SeqCst), configs.len());
 
-        if let Some(result) = result_option {
-            let save = SimulationSave {
-                config: config,
-                result: result, 
-            };
-        
-            let serialized = serde_json::to_string(&save).expect("Serialization failed");
-            let mut file = File::create(format!("./result/sim-{i}.json")).expect("File creation failed");
-            file.write_all(serialized.as_bytes()).expect("Write to file failed");
-            
-            return Some(save);
-        }
+            if let Some(result) = result_option {
+                let save = SimulationSave {
+                    config: config,
+                    result: result,
+                };
 
-        return None;
-    }).max_by(|a, b| {
-        a.result.flow_rate.partial_cmp(&b.result.flow_rate).unwrap()
-    }).unwrap();
+                let serialized = serde_json::to_string(&save).expect("Serialization failed");
+                let mut file =
+                    File::create(format!("./output/sim-{i}.json")).expect("File creation failed");
+                file.write_all(serialized.as_bytes())
+                    .expect("Write to file failed");
 
+                return Some(save);
+            }
+
+            return None;
+        })
+        .max_by(|a, b| a.result.flow_rate.partial_cmp(&b.result.flow_rate).unwrap())
+        .unwrap();
 
     let mut sim = CarsSimulation::new(bake_config(best.config));
     for _ in 0..1000 {
@@ -254,35 +259,24 @@ fn run_batch(configs: Vec<RunConfig>) ->  Result<(), Box<dyn std::error::Error>>
     Ok(())
 }
 
-fn main() ->  Result<(), Box<dyn std::error::Error>> {
-    let car_densities = vec![0.1];
-    let biases = linspace(0., 1., 50);
-    let num_lanes = vec![10];//linspace(0, 30, 2);
-    let stop_rates = vec![0.0001, 0.0002, 0.0005, 0.001, 0.002, 0.005];
-
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut configs = Vec::<RunConfig>::new();
 
-    for &stop_rate in stop_rates.iter() {
-        for &bias in biases.iter() {
-            for &num_lanes in num_lanes.iter() {
-                for &car_density in car_densities.iter() {
-                    let config = RunConfig {
-                        road_length: 200.,
-                        num_lanes: num_lanes,
-                        car_density: car_density,
-                        max_movement: 0.2,
-                        acceleration_rate: 0.001,
-                        break_rate: 0.01,
-                        view_width: 1,
-                        random_stop_rate: stop_rate,
-                        current_lane_bias: bias,
-                        steps_to_run: 5000,
-                    };
-                    
-                    configs.push(config);
-                }
-            }
-        }
+    for n in 0..100 {
+        let config = RunConfig {
+            road_length: 200.,
+            num_lanes: 10,
+            car_density: 0.05,
+            max_movement: 0.1,
+            acceleration_rate: 0.005,
+            break_rate: 0.05,
+            view_width: 1,
+            random_stop_rate: 0.001,
+            current_lane_bias: 0.1,
+            steps_to_run: 10000,
+        };
+
+        configs.push(config);
     }
 
     run_batch(configs)?;

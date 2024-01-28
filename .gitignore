@@ -1,3 +1,5 @@
 /target
-/result
+/results
+/sim
+/output
 .DS_Store

@@ -1,7 +1,7 @@
 use rand::Rng;
 use std::cmp::Ordering;
 
-use crate::Config;
+use crate::{Config, LaneScoreStrategy::*};
 use crate::StepLog;
 
 pub struct Car {
@@ -114,7 +114,11 @@ fn calculate_lane_score (car: &Car, car_in_front: &Car, car_behind: &Car, config
     let velocity_for_behind = calculate_appropriate_velocity(config, distance_behind);
     let velocity_for_front = calculate_appropriate_velocity(config, distance_front);
 
-    return (velocity_for_behind + velocity_for_front) / (2. * config.max_velocity);
+    match config.lane_score_strategy {
+        ForwardLooking => return velocity_for_front / config.max_velocity,
+        BiDirectional => return (velocity_for_behind + velocity_for_front) / (2. * config.max_velocity),
+        BackwardLooking => return velocity_for_behind / config.max_velocity,
+    }
 } 
 
 fn evaluate_lane_change(cars: &AllCars, config: &Config, i: usize, direction: Direction) -> (f64, i32) {

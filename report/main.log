@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2024.1.28)  28 JAN 2024 22:42
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2024.1.28)  29 JAN 2024 22:36
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -203,35 +203,78 @@ Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
  [1
 
-{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-Overfull \hbox (40.40009pt too wide) in paragraph at lines 64--87
- [][] 
+{/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [3] [4] [5]
+<road.png, id=31, 462.528pt x 346.896pt>
+File: road.png Graphic file (type png)
+<use road.png>
+Package pdftex.def Info: road.png  used on input line 142.
+(pdftex.def)             Requested size: 172.5pt x 129.37639pt.
+<lanes.png, id=33, 462.528pt x 346.896pt>
+File: lanes.png Graphic file (type png)
+<use lanes.png>
+Package pdftex.def Info: lanes.png  used on input line 150.
+(pdftex.def)             Requested size: 172.5pt x 129.37639pt.
+<step_movement.png, id=34, 462.528pt x 346.896pt>
+File: step_movement.png Graphic file (type png)
+<use step_movement.png>
+Package pdftex.def Info: step_movement.png  used on input line 162.
+(pdftex.def)             Requested size: 155.24895pt x 116.43451pt.
+<steps.png, id=35, 462.528pt x 346.896pt>
+File: steps.png Graphic file (type png)
+<use steps.png>
+Package pdftex.def Info: steps.png  used on input line 170.
+(pdftex.def)             Requested size: 172.5pt x 129.37639pt.
+ [6 <./road.png> <./lanes.png>]
+<methods-bias.png, id=41, 462.528pt x 346.896pt>
+File: methods-bias.png Graphic file (type png)
+<use methods-bias.png>
+Package pdftex.def Info: methods-bias.png  used on input line 182.
+(pdftex.def)             Requested size: 276.00105pt x 207.01175pt.
+<methods-density.png, id=42, 462.528pt x 346.896pt>
+File: methods-density.png Graphic file (type png)
+<use methods-density.png>
+Package pdftex.def Info: methods-density.png  used on input line 193.
+(pdftex.def)             Requested size: 172.5pt x 129.37639pt.
+<methods-stop.png, id=43, 462.528pt x 346.896pt>
+File: methods-stop.png Graphic file (type png)
+<use methods-stop.png>
+Package pdftex.def Info: methods-stop.png  used on input line 201.
+(pdftex.def)             Requested size: 172.5pt x 129.37639pt.
+ [7 <./step_movement.png> <./steps.png> <./methods-bias.png>]
+<methods-acceleration.png, id=51, 462.528pt x 346.896pt>
+File: methods-acceleration.png Graphic file (type png)
+<use methods-acceleration.png>
+Package pdftex.def Info: methods-acceleration.png  used on input line 213.
+(pdftex.def)             Requested size: 172.5pt x 129.37639pt.
+<methods-braking.png, id=52, 462.528pt x 346.896pt>
+File: methods-braking.png Graphic file (type png)
+<use methods-braking.png>
+Package pdftex.def Info: methods-braking.png  used on input line 221.
+(pdftex.def)             Requested size: 172.5pt x 129.37639pt.
+ [8 <./methods-density.png> <./methods-stop.png> <./methods-acceleration.png> <./methods-braking.png>]
+Overfull \hbox (5.27737pt too wide) in paragraph at lines 249--250
+[]\OT1/cmr/m/n/10 A plau-si-ble ex-pla-na-tion for the su-pe-rior per-for-mance of the Backward-Looking
  []
 
-
-Overfull \hbox (40.40009pt too wide) in paragraph at lines 96--119
- [][] 
- []
-
-[3] [4] (./main.aux)
+[9] [10] [11] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 4110 strings out of 474228
- 70453 string characters out of 5746458
+ 4191 strings out of 474228
+ 72221 string characters out of 5746458
  1934975 words of memory out of 5000000
- 26332 multiletter control sequences out of 15000+600000
- 564831 words of font info for 59 fonts, out of 8000000 for 9000
+ 26412 multiletter control sequences out of 15000+600000
+ 565130 words of font info for 60 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 61i,11n,69p,628b,297s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on main.pdf (4 pages, 135910 bytes).
+ 61i,11n,69p,1182b,435s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
+Output written on main.pdf (11 pages, 467154 bytes).
 PDF statistics:
- 73 PDF objects out of 1000 (max. 8388607)
- 44 compressed objects within 1 object stream
+ 125 PDF objects out of 1000 (max. 8388607)
+ 67 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 46 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -12,7 +12,15 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use util::{hue_to_rgb};
+use util::hue_to_rgb;
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum LaneScoreStrategy {
+    BiDirectional,
+    ForwardLooking,
+    BackwardLooking,
+}
+use LaneScoreStrategy::*;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct RunConfig {
@@ -20,12 +28,31 @@ struct RunConfig {
     num_lanes: i32,
     car_density: f64,
     acceleration_rate: f64,
-    break_rate: f64,
+    brake_rate: f64,
     max_movement: f64,
     view_width: i32,
     random_stop_rate: f64,
     current_lane_bias: f64,
     steps_to_run: usize,
+    lane_score_strategy: LaneScoreStrategy,
+}
+
+impl RunConfig {
+    fn new() -> RunConfig {
+        return RunConfig {
+            road_length: 200.,
+            num_lanes: 10,
+            car_density: 0.05,
+            max_movement: 0.2,
+            acceleration_rate: 0.001,
+            brake_rate: 0.01,
+            view_width: 1,
+            random_stop_rate: 0.0001,
+            current_lane_bias: 0.1,
+            steps_to_run: 100000,
+            lane_score_strategy: BiDirectional,
+        };
+    }
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -41,6 +68,7 @@ struct Config {
     random_stop_rate: f64,
     dt: f64,
     current_lane_bias: f64,
+    lane_score_strategy: LaneScoreStrategy,
 }
 
 #[derive(Serialize, Deserialize, Clone, Copy)]
@@ -168,10 +196,11 @@ fn bake_config(ic: RunConfig) -> Config {
         num_cars: (ic.car_density * ic.road_length * (ic.num_lanes as f64)) as usize,
         max_velocity: ic.max_movement,
         max_acceleration: ic.max_movement * ic.acceleration_rate,
-        max_deceleration: ic.max_movement * ic.break_rate,
+        max_deceleration: ic.max_movement * ic.brake_rate,
         view_width: ic.view_width,
         random_stop_rate: ic.random_stop_rate,
         current_lane_bias: ic.current_lane_bias,
+        lane_score_strategy: ic.lane_score_strategy,
         dt: 1.,
     };
 }
@@ -262,22 +291,26 @@ fn run_batch(configs: Vec<RunConfig>) -> Result<(), Box<dyn std::error::Error>> 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut configs = Vec::<RunConfig>::new();
 
-    for n in 0..100 {
-        let config = RunConfig {
-            road_length: 200.,
-            num_lanes: 10,
-            car_density: 0.05,
-            max_movement: 0.1,
-            acceleration_rate: 0.005,
-            break_rate: 0.05,
-            view_width: 1,
-            random_stop_rate: 0.001,
-            current_lane_bias: 0.1,
-            steps_to_run: 10000,
-        };
+    let n = 40;
+    let mut var = Vec::<f64>::new();
 
-        configs.push(config);
+    for i in 0..n {
+        let p = (i as f64) / ((n - 1) as f64);
+
+        var.push(0.005 + 0.015 * p);
     }
+
+
+    let mut config = RunConfig::new();
+
+    config.current_lane_bias = 0.3;
+    config.lane_score_strategy = BiDirectional;
+    config.random_stop_rate = 0.001;
+    config.acceleration_rate = 0.005;
+    config.car_density = 0.1;
+    config.steps_to_run = 1;
+
+    configs.push(config);
 
     run_batch(configs)?;
 

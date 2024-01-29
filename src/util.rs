@@ -31,6 +31,7 @@ pub fn hue_to_rgb(hue: f64) -> [f32; 4] {
     return [r as f32, g as f32, b as f32, 1.0];
 }
 
+#[allow(dead_code)]
 pub fn linspace<T>(start: T, end: T, num_points: usize) -> Vec<T>
 where
     T: NumCast + Copy + FromPrimitive,

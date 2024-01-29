@@ -205,6 +205,7 @@ fn bake_config(ic: RunConfig) -> Config {
     };
 }
 
+#[allow(dead_code)]
 fn run_simulation(input_config: RunConfig) -> Option<SimulationResult> {
     let config = bake_config(input_config);
 
@@ -241,6 +242,7 @@ fn run_simulation(input_config: RunConfig) -> Option<SimulationResult> {
     });
 }
 
+#[allow(dead_code)]
 fn run_batch(configs: Vec<RunConfig>) -> Result<(), Box<dyn std::error::Error>> {
     let path = Path::new("./output");
     if path.exists() {
@@ -289,30 +291,9 @@ fn run_batch(configs: Vec<RunConfig>) -> Result<(), Box<dyn std::error::Error>> 
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut configs = Vec::<RunConfig>::new();
+    let config = RunConfig::new();
 
-    let n = 40;
-    let mut var = Vec::<f64>::new();
-
-    for i in 0..n {
-        let p = (i as f64) / ((n - 1) as f64);
-
-        var.push(0.005 + 0.015 * p);
-    }
-
-
-    let mut config = RunConfig::new();
-
-    config.current_lane_bias = 0.3;
-    config.lane_score_strategy = BiDirectional;
-    config.random_stop_rate = 0.001;
-    config.acceleration_rate = 0.005;
-    config.car_density = 0.1;
-    config.steps_to_run = 1;
-
-    configs.push(config);
-
-    run_batch(configs)?;
+    start_simulation(CarsSimulation::new(bake_config(config)));
 
     Ok(())
 }
